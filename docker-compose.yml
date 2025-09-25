@@ -4,7 +4,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - \"8000:8000\"
+      - "8000:8000"
     environment:
       - PYTHONPATH=/app
     volumes:
@@ -12,11 +12,11 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: .
+    image: nginx:alpine
     ports:
-      - \"3000:3000\"
-    environment:
-      - NODE_ENV=production
+      - "3000:80"
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html:ro
     depends_on:
       - backend
     restart: unless-stopped
