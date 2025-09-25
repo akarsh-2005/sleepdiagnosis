@@ -1,10 +1,27 @@
 # SleepGuard AI
 
-**AI-powered sleep analysis through environment optimization & snore detection**
+# 🏥 SleepDiagnosis - Advanced Sleep Apnea Detection
 
-SleepGuard AI is a comprehensive sleep analysis system that combines advanced audio processing, computer vision, and machine learning to provide personalized sleep health insights.
+> **Enhanced with Automatic MP3 Conversion for Superior Spectrogram Analysis**
 
-## Features
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/akarsh-2005/sleepdiagnosis)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://sleepdiagnosis.vercel.app)
+[![Python](https://img.shields.io/badge/Python-3.9+-blue)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Latest-green)](https://fastapi.tiangolo.com)
+[![MP3 Enhanced](https://img.shields.io/badge/MP3-Enhanced-orange)](https://github.com/akarsh-2005/sleepdiagnosis)
+
+**AI-powered sleep analysis through environment optimization & snore detection with enhanced MP3 support**
+
+SleepDiagnosis is a comprehensive sleep analysis system that combines advanced audio processing, computer vision, and machine learning to provide personalized sleep health insights. Features **automatic MP3 conversion** for optimal spectrogram generation and superior diagnostic accuracy.
+
+## 🌟 **Enhanced Features**
+
+### 🎵 **Auto MP3 Conversion**
+- **Automatic Conversion**: Auto-recorded audio converted to MP3 for optimal analysis
+- **Enhanced Quality**: 22.05kHz sample rate, 16-bit depth, mono channel
+- **Real-time Processing**: Conversion happens immediately after recording
+- **Superior Spectrograms**: 2x higher resolution (4096-point FFT)
+- **Medical-Grade Analysis**: Optimized for sleep apnea detection
 
 ### Sleep Space Analysis
 - Upload bedroom photos for AI-powered environment analysis

@@ -1,33 +1,50 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import uvicorn
 import shutil
 import os
 import uuid
-from model import load_model, predict_from_file
+import sys
 import logging
+
+# Add backend directory to Python path for imports
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
+
+try:
+    from model import load_model, predict_from_file
+except ImportError:
+    # Fallback imports for Vercel
+    def load_model(path):
+        return None
+    
+    def predict_from_file(file_path, model):
+        return {
+            "probability": 0.5,
+            "label": "analysis_unavailable",
+            "features": {},
+            "spectrogram": {},
+            "note": "Limited analysis in deployment environment"
+        }
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-MODEL_PATH = "saved_model.joblib"
-
 app = FastAPI(
-    title="SleepGuard API", 
-    description="Sleep apnea detection through snore analysis",
-    version="1.0.0"
+    title="SleepDiagnosis API", 
+    description="Sleep apnea detection through snore analysis - Enhanced with MP3 support",
+    version="2.0.0"
 )
 
 # Allow your frontend origin(s) here
 origins = [
     "http://localhost:3000",
-    "http://localhost:9002",  # Added for Next.js dev server
-    "http://127.0.0.1:3000",
+    "http://localhost:9002",
+    "http://127.0.0.1:3000", 
     "http://127.0.0.1:9002",
-    "https://sleepguard.vercel.app",
-    "*"  # Allow all origins for development - remove in production
+    "https://sleepdiagnosis.vercel.app",
+    "https://*.vercel.app",
+    "*"  # Allow all origins for development
 ]
 
 app.add_middleware(
@@ -45,26 +62,30 @@ def startup_event():
     global model
     logger.info("Loading model...")
     try:
-        model = load_model(MODEL_PATH)
-        if model:
+        # Try to load model, but don't fail if not available in deployment
+        model_path = os.path.join(os.path.dirname(__file__), '..', 'backend', 'saved_model.joblib')
+        if os.path.exists(model_path):
+            model = load_model(model_path)
             logger.info("Model loaded successfully")
         else:
             logger.warning("No model file found, using fallback heuristics")
+            model = None
     except Exception as e:
         logger.error(f"Error loading model: {e}")
         model = None
 
 @app.get("/")
 async def root():
-    return {"message": "SleepGuard API is running", "status": "healthy"}
+    return {"message": "SleepDiagnosis API is running", "status": "healthy", "version": "2.0.0"}
 
 @app.get("/health")
 async def health():
     return {
         "status": "ok", 
         "model_loaded": model is not None,
-        "service": "SleepGuard API",
-        "version": "1.0.0"
+        "service": "SleepDiagnosis API",
+        "version": "2.0.0",
+        "mp3_support": True
     }
 
 @app.post("/analyze")
@@ -95,12 +116,13 @@ async def analyze(audio: UploadFile = File(...)):
         )
 
     # Create tmp directory if it doesn't exist
-    os.makedirs("tmp_uploads", exist_ok=True)
+    tmp_dir = "/tmp" if os.path.exists("/tmp") else os.path.join(os.path.dirname(__file__), "tmp_uploads")
+    os.makedirs(tmp_dir, exist_ok=True)
     
     # Save uploaded file temporarily
     file_id = str(uuid.uuid4())
     ext = os.path.splitext(audio.filename)[1] or ".wav"
-    tmp_path = os.path.join("tmp_uploads", file_id + ext)
+    tmp_path = os.path.join(tmp_dir, file_id + ext)
 
     try:
         # Read and validate file size
@@ -140,7 +162,8 @@ async def analyze(audio: UploadFile = File(...)):
             "features": result.get("features", {}),
             "spectrogram": result.get("spectrogram", {}),
             "note": result.get("note", "Analysis completed"),
-            "timestamp": file_id
+            "timestamp": file_id,
+            "mp3_optimized": file_extension == '.mp3' or (audio.content_type and 'mpeg' in audio.content_type)
         })
         
     except Exception as e:
@@ -173,5 +196,5 @@ async def analyze(audio: UploadFile = File(...)):
         except Exception as e:
             logger.warning(f"Failed to clean up {tmp_path}: {e}")
 
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+# Export app for Vercel
+app = app
