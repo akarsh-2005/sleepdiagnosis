@@ -202,6 +202,31 @@
             color: #4a5568;
             font-weight: 500;
         }
+
+        .required-indicator {
+            color: #e53e3e;
+            font-weight: bold;
+            font-size: 12px;
+            background: #fed7d7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+
+        .upload-area.required {
+            border: 2px dashed #e53e3e;
+            border-radius: 8px;
+        }
+
+        .upload-area.required:hover {
+            border-color: #c53030;
+            background: #fef5e7;
+        }
+
+        .upload-area.completed {
+            border: 2px solid #48bb78;
+            background: #f0fff4;
+        }
     </style>
 </head>
 <body>
@@ -215,6 +240,9 @@
             <div class="card-header">
                 <h2>Sleep Analysis Input</h2>
                 <p>Upload your bedroom photo for sleep environment advice or audio for snore analysis</p>
+                <div style="background: #fef5e7; border: 1px solid #f6ad55; border-radius: 6px; padding: 10px; margin: 10px 0;">
+                    <p style="margin: 0; color: #c05621; font-size: 14px;"><strong>IMPORTANT:</strong> Content upload is required for analysis. Please select a tab below and provide the necessary input.</p>
+                </div>
             </div>
             <div class="card-body">
                 <div class="tab-buttons">
@@ -224,23 +252,23 @@
                 </div>
 
                 <div id="space-tab" class="tab-content active">
-                    <div class="upload-area" onclick="document.getElementById('photo-input').click()">
+                    <div class="upload-area required" id="photo-upload-area" onclick="document.getElementById('photo-input').click()">
                         <div style="font-size: 48px; margin-bottom: 15px;">HOME</div>
-                        <p style="margin: 10px 0;"><strong>Upload Your Bedroom Photo</strong></p>
+                        <p style="margin: 10px 0;"><strong>Upload Your Bedroom Photo</strong> <span class="required-indicator">REQUIRED</span></p>
                         <p style="color: #718096; margin-bottom: 10px;">Get personalized sleep environment advice</p>
                         <input type="file" id="photo-input" accept="image/*" onchange="handlePhotoSelect(event)">
                         <div id="photo-preview" style="margin-top: 15px; display: none;">
                             <img id="preview-image" style="max-width: 100%; max-height: 200px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                             <p id="photo-name" class="file-name" style="margin-top: 10px;"></p>
                         </div>
-                        <p style="font-size: 12px; color: #a0aec0; margin-top: 10px;">Supports JPG, PNG, WebP images</p>
+                        <p style="font-size: 12px; color: #a0aec0; margin-top: 10px;">Supports JPG, PNG, WebP images <span style="color: #e53e3e;">* Required for analysis</span></p>
                     </div>
                 </div>
 
                 <div id="record-tab" class="tab-content">
-                    <div class="upload-area">
+                    <div class="upload-area required" id="record-upload-area">
                         <div style="font-size: 48px; margin-bottom: 15px;">MIC</div>
-                        <p style="margin: 10px 0;"><strong>Auto Record Snoring</strong></p>
+                        <p style="margin: 10px 0;"><strong>Auto Record Snoring</strong> <span class="required-indicator">RECORDING REQUIRED</span></p>
                         <p style="color: #718096; margin-bottom: 15px;">Automatically detect and record snoring sounds</p>
                         
                         <div id="recording-controls" style="margin: 20px 0;">
@@ -293,18 +321,18 @@
                             <p style="color: #4a5568; margin: 5px 0;">Total snoring events: <span id="final-snoring-count"></span></p>
                         </div>
                         
-                        <p style="font-size: 12px; color: #a0aec0; margin-top: 10px;">Microphone access required. Recording automatically stops when snoring is detected.</p>
+                        <p style="font-size: 12px; color: #a0aec0; margin-top: 10px;">Microphone access required. Recording automatically stops when snoring is detected. <span style="color: #e53e3e;">* Recording required for analysis</span></p>
                     </div>
                 </div>
 
                 <div id="upload-tab" class="tab-content">
-                    <div class="upload-area" onclick="document.getElementById('file-input').click()">
+                    <div class="upload-area required" id="file-upload-area" onclick="document.getElementById('file-input').click()">
                         <div style="font-size: 48px; margin-bottom: 15px;">FILE</div>
-                        <p style="margin: 10px 0;"><strong>Choose an audio file</strong></p>
+                        <p style="margin: 10px 0;"><strong>Choose an audio file</strong> <span class="required-indicator">REQUIRED</span></p>
                         <p style="color: #718096;">For traditional snore analysis</p>
                         <input type="file" id="file-input" accept=".wav,.mp3" onchange="handleFileSelect(event)">
                         <div id="file-name" class="file-name hidden"></div>
-                        <p style="font-size: 12px; color: #a0aec0; margin-top: 10px;">Supports .wav and .mp3 files</p>
+                        <p style="font-size: 12px; color: #a0aec0; margin-top: 10px;">Supports .wav and .mp3 files <span style="color: #e53e3e;">* Required for analysis</span></p>
                     </div>
                 </div>
 
@@ -386,6 +414,9 @@
                     document.getElementById('file-name').textContent = file.name;
                     document.getElementById('file-name').classList.remove('hidden');
                     document.getElementById('analyze-btn').classList.remove('hidden');
+                    // Mark as completed
+                    document.getElementById('file-upload-area').classList.remove('required');
+                    document.getElementById('file-upload-area').classList.add('completed');
                 } else {
                     alert('Please upload a .wav or .mp3 file.');
                 }
@@ -407,6 +438,9 @@
                     reader.readAsDataURL(file);
                     
                     document.getElementById('analyze-btn').classList.remove('hidden');
+                    // Mark as completed
+                    document.getElementById('photo-upload-area').classList.remove('required');
+                    document.getElementById('photo-upload-area').classList.add('completed');
                 } else {
                     alert('Please upload an image file (JPG, PNG, WebP).');
                 }
@@ -449,8 +483,10 @@
                     document.getElementById('final-duration').textContent = formatTime(duration);
                     document.getElementById('final-snoring-count').textContent = snoringDetectionCount;
                     
-                    // Show analyze button
+                    // Show analyze button and mark as completed
                     document.getElementById('analyze-btn').classList.remove('hidden');
+                    document.getElementById('record-upload-area').classList.remove('required');
+                    document.getElementById('record-upload-area').classList.add('completed');
                 };
                 
                 // Start recording
@@ -977,6 +1013,14 @@
             document.getElementById('stop-recording-btn').style.display = 'none';
             document.getElementById('recording-status').style.display = 'none';
             snoringDetectionCount = 0;
+            
+            // Reset required area indicators
+            document.getElementById('photo-upload-area').classList.remove('completed');
+            document.getElementById('photo-upload-area').classList.add('required');
+            document.getElementById('file-upload-area').classList.remove('completed');
+            document.getElementById('file-upload-area').classList.add('required');
+            document.getElementById('record-upload-area').classList.remove('completed');
+            document.getElementById('record-upload-area').classList.add('required');
         }
 
         window.onload = async function() {
