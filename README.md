@@ -1,32 +1,32 @@
-# SleepGuard AI 🛌✨
+# SleepGuard AI
 
 **AI-powered sleep analysis through environment optimization & snore detection**
 
 SleepGuard AI is a comprehensive sleep analysis system that combines advanced audio processing, computer vision, and machine learning to provide personalized sleep health insights.
 
-## 🌟 Features
+## Features
 
-### 🏠 **Sleep Space Analysis**
+### Sleep Space Analysis
 - Upload bedroom photos for AI-powered environment analysis
 - Get personalized recommendations for optimal sleep conditions
 - Color-coded severity levels (high, moderate, low)
 - Professional sleep environment advice
 
-### 🎙️ **Auto Record Snoring**
+### Auto Record Snoring
 - Real-time snoring detection and automatic recording
 - Configurable sensitivity settings (10-90%)
 - Customizable recording duration (5 minutes to 2 hours)
 - Live audio level monitoring with visual feedback
 - Smart snoring event counting
 
-### 📁 **Upload Audio Analysis**
+### Upload Audio Analysis
 - Support for .wav, .mp3, .m4a, and .flac files
 - Advanced spectrogram generation and visualization
 - Frequency band analysis (Low, Mid, High frequency ranges)
 - Dominant frequency detection
 - Sleep apnea probability scoring
 
-### 📊 **Advanced Analytics**
+### Advanced Analytics
 - **Spectrogram Visualization**: Time-frequency analysis with matplotlib
 - **Frequency Band Breakdown**: 
   - Low Frequency (0-100 Hz): Deep breathing, body movements
