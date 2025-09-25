@@ -30,16 +30,24 @@
 
 ```
 sleepdiagnosis/
-├── backend/              # FastAPI backend
-│   ├── main.py          # Main application (with static file serving)
-│   ├── model.py         # ML models and audio processing
-│   └── requirements.txt # Python dependencies
-├── index.html           # Frontend application
-├── requirements.txt     # Root Python dependencies
-├── railway.json         # Railway configuration
-├── nixpacks.toml       # Nixpacks build configuration
-└── Procfile            # Process definition
+├── app.py               # Railway entry point (auto-detected)
+├── main.py              # Alternative entry point
+├── backend/             # FastAPI backend
+│   ├── main.py         # Main application (with static file serving)
+│   ├── model.py        # ML models and audio processing
+│   └── requirements.txt # Backend Python dependencies
+├── index.html          # Frontend application
+├── requirements.txt    # Root Python dependencies
+├── railway.json        # Railway configuration
+├── nixpacks.toml      # Nixpacks build configuration
+└── Procfile           # Process definition
 ```
+
+## ⚠️ **Railway Deployment Fix Applied**
+
+**Issue**: Railway couldn't auto-detect start command with `backend/` directory structure.
+
+**Solution**: Created `app.py` in root directory that Railway automatically detects and imports the FastAPI app from backend.
 
 ## ⚙️ Configuration Files
 
