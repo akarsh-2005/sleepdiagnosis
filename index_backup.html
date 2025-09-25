@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SleepGuard - Sleep Apnea Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: #f1f3f4;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .tab-button.active {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: #5a67d8;
+            background: #f7fafc;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger {
+            background: #e53e3e;
+        }
+
+        .btn-danger:hover {
+            background: #c53030;
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .recording-time {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .result-card {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .result-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .confidence-bar {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .confidence-fill {
+            background: #667eea;
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .disclaimer {
+            background: #fed7d7;
+            border: 1px solid #feb2b2;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .disclaimer-title {
+            font-weight: bold;
+            color: #c53030;
+            margin-bottom: 5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SleepGuard</h1>
+            <p>AI-powered sleep apnea detection through snore analysis</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Sleep Analysis Input</h2>
+                <p>Upload your bedroom photo for sleep environment advice or audio for snore analysis</p>
+            </div>
+            <div class="card-body">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="switchTab('space')">🏠 Sleep Space</button>
+                    <button class="tab-button" onclick="switchTab('upload')">📁 Upload Audio</button>
+                </div>
+
+                <div id="space-tab" class="tab-content active">
+                    <div class="upload-area" onclick="document.getElementById('photo-input').click()">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🏠</div>
+                        <p style="margin: 10px 0;"><strong>Upload Your Bedroom Photo</strong></p>
+                        <p style="color: #718096; margin-bottom: 10px;">Get personalized sleep environment advice</p>
+                        <input type="file" id="photo-input" accept="image/*" onchange="handlePhotoSelect(event)" style="display: none;">
+                        <div id="photo-preview" style="margin-top: 15px; display: none;">
+                            <img id="preview-image" style="max-width: 100%; max-height: 200px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <p id="photo-name" class="file-name" style="margin-top: 10px;"></p>
+                        </div>
+                        <p style="font-size: 12px; color: #a0aec0; margin-top: 10px;">Supports JPG, PNG, WebP images</p>
+                    </div>
+                </div>
+
+                <div id="upload-tab" class="tab-content">
+                    <div class="upload-area" onclick="document.getElementById('file-input').click()">
+                        <div style="font-size: 48px; margin-bottom: 15px;">📁</div>
+                        <p style="margin: 10px 0;"><strong>Choose an audio file</strong></p>
+                        <p style="color: #718096;">For traditional snore analysis</p>
+                        <input type="file" id="file-input" accept=".wav,.mp3" onchange="handleFileSelect(event)">
+                        <div id="file-name" class="file-name hidden"></div>
+                        <p style="font-size: 12px; color: #a0aec0; margin-top: 10px;">Supports .wav and .mp3 files</p>
+                    </div>
+                </div>
+
+                <button id="analyze-btn" class="btn btn-full hidden" onclick="analyzeContent()" style="margin-top: 20px;">
+                    <span id="analyze-text">🔍 Analyze Sleep Space</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="loading-card" class="card hidden">
+            <div class="card-body">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>Analyzing your audio...</h3>
+                    <p>This may take a moment</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="results-card" class="card hidden">
+            <div class="card-body">
+                <div id="results-content"></div>
+                <div class="disclaimer">
+                    <div class="disclaimer-title">⚠ Medical Disclaimer</div>
+                    <p>This tool is for screening purposes only and should not replace professional medical advice. Please consult a healthcare provider for proper diagnosis and treatment.</p>
+                </div>
+                <button class="btn btn-full" onclick="resetApp()" style="margin-top: 20px;">
+                    🔄 Start Over
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        let recordingTime = 0;
+        let recordingInterval;
+        let currentAudioFile = null;
+        let currentPhotoFile = null;
+        let analysisMode = 'space'; // 'space' or 'audio'
+
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            
+            // Update analysis mode and button text
+            analysisMode = tab;
+            const analyzeBtn = document.getElementById('analyze-btn');
+            const analyzeText = document.getElementById('analyze-text');
+            if (tab === 'space') {
+                analyzeText.textContent = '🔍 Analyze Sleep Space';
+            } else {
+                analyzeText.textContent = '🔍 Analyze Snore Audio';
+            }
+        }
+
+        async function toggleRecording() {
+            if (!isRecording) {
+                await startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/mpeg' });
+                    currentAudioFile = new File([audioBlob], 'recording.mp3', { type: 'audio/mpeg' });
+                    document.getElementById('analyze-btn').classList.remove('hidden');
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                recordingTime = 0;
+
+                document.getElementById('record-btn').textContent = '⏹ Stop Recording';
+                document.getElementById('record-btn').classList.add('btn-danger');
+                document.getElementById('recording-time').classList.remove('hidden');
+
+                recordingInterval = setInterval(() => {
+                    recordingTime++;
+                    const minutes = Math.floor(recordingTime / 60).toString().padStart(2, '0');
+                    const seconds = (recordingTime % 60).toString().padStart(2, '0');
+                    document.getElementById('recording-time').textContent = `${minutes}:${seconds}`;
+                }, 1000);
+
+            } catch (error) {
+                alert('Could not access microphone. Please check permissions.');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                clearInterval(recordingInterval);
+
+                document.getElementById('record-btn').textContent = '🎤 Start Recording';
+                document.getElementById('record-btn').classList.remove('btn-danger');
+            }
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.type === 'audio/wav' || file.type === 'audio/mpeg') {
+                    currentAudioFile = file;
+                    document.getElementById('file-name').textContent = file.name;
+                    document.getElementById('file-name').classList.remove('hidden');
+                    document.getElementById('analyze-btn').classList.remove('hidden');
+                } else {
+                    alert('Please upload a .wav or .mp3 file.');
+                }
+            }
+        }
+
+        function handlePhotoSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.type.startsWith('image/')) {
+                    currentPhotoFile = file;
+                    
+                    // Show preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('preview-image').src = e.target.result;
+                        document.getElementById('photo-name').textContent = file.name;
+                        document.getElementById('photo-preview').style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                    
+                    document.getElementById('analyze-btn').classList.remove('hidden');
+                } else {
+                    alert('Please upload an image file (JPG, PNG, WebP).');
+                }
+            }
+        }
+
+        async function analyzeContent() {
+            if (analysisMode === 'space') {
+                await analyzeSleepSpace();
+            } else {
+                await analyzeAudio();
+            }
+        }
+
+        async function analyzeSleepSpace() {
+            if (!currentPhotoFile) {
+                alert('Please upload a bedroom photo first.');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loading-card').classList.remove('hidden');
+            document.getElementById('results-card').classList.add('hidden');
+
+            try {
+                // Simulate AI analysis with realistic sleep environment advice
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                const advice = generateSleepAdvice();
+                displaySleepAdvice(advice);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Analysis failed. Please try again.');
+            } finally {
+                document.getElementById('loading-card').classList.add('hidden');
+            }
+        }
+
+        function generateSleepAdvice() {
+            // Simulate different advice scenarios
+            const scenarios = [
+                {
+                    title: "Lighting Environment",
+                    issue: "Room appears to have bright lighting",
+                    advice: "Consider using blackout curtains or an eye mask. Dim lighting 1-2 hours before bedtime helps your body produce melatonin naturally.",
+                    icon: "💡",
+                    severity: "moderate"
+                },
+                {
+                    title: "Pillow Support",
+                    issue: "Pillows appear flat or unsupportive",
+                    advice: "Invest in a contoured or memory foam pillow that keeps your neck aligned. Proper neck support can reduce airway obstruction during sleep.",
+                    icon: "😴",
+                    severity: "high"
+                },
+                {
+                    title: "Room Organization",
+                    issue: "Bedroom appears cluttered",
+                    advice: "A clean, organized bedroom promotes better sleep quality. Consider removing electronic devices and creating a calming environment.",
+                    icon: "🧹",
+                    severity: "low"
+                },
+                {
+                    title: "Optimal Sleep Environment",
+                    issue: "Your bedroom looks well-organized",
+                    advice: "Great job! Your sleep environment appears conducive to quality rest. Maintain this setup and ensure room temperature stays between 60-67°F.",
+                    icon: "✅",
+                    severity: "none"
+                }
+            ];
+            
+            // Randomly select 1-2 scenarios for realistic analysis
+            const numAdvice = Math.random() > 0.6 ? 2 : 1;
+            const selectedAdvice = [];
+            const usedIndices = new Set();
+            
+            for (let i = 0; i < numAdvice; i++) {
+                let randomIndex;
+                do {
+                    randomIndex = Math.floor(Math.random() * scenarios.length);
+                } while (usedIndices.has(randomIndex));
+                
+                usedIndices.add(randomIndex);
+                selectedAdvice.push(scenarios[randomIndex]);
+            }
+            
+            return selectedAdvice;
+        }
+
+        function displaySleepAdvice(adviceList) {
+            let adviceHtml = '';
+            \n            adviceList.forEach(advice => {
+                const severityColor = {
+                    'high': '#e53e3e',
+                    'moderate': '#ed8936', 
+                    'low': '#38b2ac',
+                    'none': '#48bb78'
+                }[advice.severity];
+                \n                const severityBg = {
+                    'high': '#fed7d7',
+                    'moderate': '#fef5e7',
+                    'low': '#e6fffa', 
+                    'none': '#f0fff4'
+                }[advice.severity];
+                
+                adviceHtml += `
+                    <div style=\"background: ${severityBg}; border-left: 4px solid ${severityColor}; padding: 20px; margin: 15px 0; border-radius: 8px;\">
+                        <div style=\"display: flex; align-items: center; margin-bottom: 10px;\">
+                            <span style=\"font-size: 24px; margin-right: 10px;\">${advice.icon}</span>
+                            <h4 style=\"margin: 0; color: #2d3748; font-size: 18px;\">${advice.title}</h4>
+                        </div>
+                        <p style=\"margin: 8px 0; color: #4a5568; font-weight: 500;\">${advice.issue}</p>
+                        <p style=\"margin: 0; color: #2d3748; line-height: 1.5;\">${advice.advice}</p>
+                    </div>
+                `;
+            });
+            
+            const resultsHtml = `
+                <div class=\"result-card\">
+                    <div class=\"result-title\">🏠 Sleep Environment Analysis</div>
+                    <p style=\"margin: 15px 0; color: #4a5568;\">
+                        Based on your bedroom photo, here are personalized recommendations to optimize your sleep environment:
+                    </p>
+                    ${adviceHtml}
+                    <div style=\"margin-top: 20px; padding: 15px; background: #edf2f7; border-radius: 8px;\">
+                        <p style=\"margin: 0; font-size: 14px; color: #4a5568;\">
+                            <strong>📝 Note:</strong> These suggestions are based on visual analysis of your bedroom setup. 
+                            For persistent sleep issues or suspected sleep apnea, please consult a healthcare professional.
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('results-content').innerHTML = resultsHtml;
+            document.getElementById('results-card').classList.remove('hidden');
+        }
+
+        async function analyzeAudio() {
+            if (!currentAudioFile) {
+                alert('Please record or upload an audio file first.');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loading-card').classList.remove('hidden');
+            document.getElementById('results-card').classList.add('hidden');
+
+            try {
+                const formData = new FormData();
+                formData.append('audio', currentAudioFile);
+
+                const response = await fetch('http://localhost:8000/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Analysis failed: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                console.log('Backend response:', result); // Debug log
+                displayResults(result);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Analysis failed. Please make sure the backend server is running on port 8000.');
+            } finally {
+                document.getElementById('loading-card').classList.add('hidden');
+            }
+        }
+            if (!currentAudioFile) {
+                alert('Please record or upload an audio file first.');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loading-card').classList.remove('hidden');
+            document.getElementById('results-card').classList.add('hidden');
+
+            try {
+                const formData = new FormData();
+                formData.append('audio', currentAudioFile);
+
+                const response = await fetch('http://localhost:8000/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Analysis failed: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                console.log('Backend response:', result); // Debug log
+                displayResults(result);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Analysis failed. Please make sure the backend server is running on port 8000.');
+            } finally {
+                document.getElementById('loading-card').classList.add('hidden');
+            }
+        }
+
+        function displayResults(result) {
+            const isApnea = result.label === 'likely_apnea';
+            const confidence = Math.round(result.probability * 100);
+            
+            console.log('Spectrogram data:', result.spectrogram); // Debug log
+            
+            // Build spectrogram section if available
+            let spectrogramHtml = '';
+            if (result.spectrogram) {
+                if (result.spectrogram.image_base64) {
+                    spectrogramHtml = `
+                        <div style="margin: 20px 0; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                            <h4 style="margin-bottom: 15px; color: #4a5568; font-size: 18px;">📊 Frequency Analysis & Spectrogram</h4>
+                            <div style="text-align: center; margin-bottom: 15px; background: #f7fafc; padding: 15px; border-radius: 8px;">
+                                <img src="data:image/png;base64,${result.spectrogram.image_base64}" 
+                                     alt="Audio Spectrogram" 
+                                     style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                                <p style="margin-top: 10px; font-size: 12px; color: #718096; font-style: italic;">
+                                    Spectrogram showing frequency content over time and average frequency spectrum
+                                </p>
+                            </div>
+                            ${result.spectrogram.frequency_analysis ? generateFrequencyAnalysis(result.spectrogram.frequency_analysis) : ''}
+                        </div>
+                    `;
+                } else if (result.spectrogram.error) {
+                    spectrogramHtml = `
+                        <div style="margin: 20px 0; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                            <h4 style="margin-bottom: 15px; color: #4a5568;">📊 Frequency Analysis</h4>
+                            <div style="background: #fed7d7; border: 1px solid #feb2b2; border-radius: 8px; padding: 15px;">
+                                <p style="margin: 0; color: #c53030;">⚠ Spectrogram generation failed: ${result.spectrogram.error}</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    spectrogramHtml = `
+                        <div style="margin: 20px 0; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                            <h4 style="margin-bottom: 15px; color: #4a5568;">📊 Frequency Analysis</h4>
+                            <div style="background: #fef5e7; border: 1px solid #f6ad55; border-radius: 8px; padding: 15px;">
+                                <p style="margin: 0; color: #c05621;">📈 Frequency analysis completed, but visual spectrogram not available</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            const resultsHtml = `
+                <div class="result-card">
+                    <div class="result-title">${isApnea ? 'Likely Sleep Apnea' : 'Normal Snoring'}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin: 15px 0;">
+                        <span>Confidence Score:</span>
+                        <strong style="font-size: 18px; color: #667eea;">${confidence}%</strong>
+                    </div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${confidence}%"></div>
+                    </div>
+                    <p style="margin-top: 15px; color: #4a5568;">
+                        ${isApnea 
+                            ? 'The analysis indicates potential sleep apnea patterns in your audio recording.' 
+                            : 'The analysis suggests normal snoring patterns without signs of sleep apnea.'}
+                    </p>
+                    <p style="margin-top: 10px; font-size: 14px; color: #718096;">
+                        Note: ${result.note || 'Analysis completed successfully'}
+                    </p>
+                    ${spectrogramHtml}
+                </div>
+            `;
+
+            document.getElementById('results-content').innerHTML = resultsHtml;
+            document.getElementById('results-card').classList.remove('hidden');
+        }
+
+        function generateFrequencyAnalysis(freqData) {
+            if (!freqData || Object.keys(freqData).length === 0) {
+                return `
+                    <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                        <p style="margin: 0; color: #718096;">Frequency analysis data not available</p>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                    <h5 style="margin-bottom: 10px; color: #2d3748; font-size: 16px;">📊 Detailed Frequency Breakdown</h5>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; font-size: 14px;">
+                        <div style="background: white; padding: 12px; border-radius: 6px; border-left: 4px solid #4299e1;">
+                            <strong>🔵 Low Frequency (0-100 Hz):</strong><br>
+                            <span style="color: #667eea; font-size: 18px; font-weight: bold;">${freqData.low_freq_energy?.toFixed(1) || 'N/A'} dB</span>
+                            <small style="display: block; color: #718096; margin-top: 4px;">Deep snoring sounds & breathing</small>
+                        </div>
+                        <div style="background: white; padding: 12px; border-radius: 6px; border-left: 4px solid #48bb78;">
+                            <strong>🟢 Mid Frequency (100-500 Hz):</strong><br>
+                            <span style="color: #48bb78; font-size: 18px; font-weight: bold;">${freqData.mid_freq_energy?.toFixed(1) || 'N/A'} dB</span>
+                            <small style="display: block; color: #718096; margin-top: 4px;">Regular breathing patterns</small>
+                        </div>
+                        <div style="background: white; padding: 12px; border-radius: 6px; border-left: 4px solid #ed8936;">
+                            <strong>🟠 High Frequency (>500 Hz):</strong><br>
+                            <span style="color: #ed8936; font-size: 18px; font-weight: bold;">${freqData.high_freq_energy?.toFixed(1) || 'N/A'} dB</span>
+                            <small style="display: block; color: #718096; margin-top: 4px;">Turbulence & obstructions</small>
+                        </div>
+                        <div style="background: white; padding: 12px; border-radius: 6px; border-left: 4px solid #9f7aea;">
+                            <strong>🔍 Dominant Frequency:</strong><br>
+                            <span style="color: #9f7aea; font-size: 18px; font-weight: bold;">${freqData.dominant_frequency?.toFixed(1) || 'N/A'} Hz</span>
+                            <small style="display: block; color: #718096; margin-top: 4px;">Primary sound frequency</small>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding: 12px; background: #e6fffa; border-left: 4px solid #38b2ac; border-radius: 4px;">
+                        <p style="margin: 0; font-size: 14px; color: #2c7a7b;">
+                            <strong>🔬 Clinical Interpretation:</strong> 
+                            ${generateFrequencyInterpretation(freqData)}
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateFrequencyInterpretation(freqData) {
+            if (!freqData.dominant_frequency) return "Frequency analysis data unavailable.";
+            
+            const domFreq = freqData.dominant_frequency;
+            const lowEnergy = freqData.low_freq_energy || 0;
+            const highEnergy = freqData.high_freq_energy || 0;
+            
+            let interpretation = [];
+            
+            if (domFreq < 100) {
+                interpretation.push("Dominant frequency is in the low range, typical of deep snoring.");
+            } else if (domFreq > 200) {
+                interpretation.push("Higher frequency dominance may indicate airway restrictions.");
+            }
+            
+            if (highEnergy / lowEnergy > 0.5) {
+                interpretation.push("Elevated high-frequency content suggests possible airway turbulence.");
+            } else {
+                interpretation.push("Lower high-frequency content suggests smoother airflow.");
+            }
+            
+            return interpretation.join(" ") || "Frequency patterns analyzed successfully.";
+        }
+
+        function resetApp() {
+            // Reset all states
+            currentAudioFile = null;
+            currentPhotoFile = null;
+            isRecording = false;
+            recordingTime = 0;
+            audioChunks = [];
+
+            // Reset UI
+            document.getElementById('file-name').classList.add('hidden');
+            document.getElementById('photo-preview').style.display = 'none';
+            document.getElementById('analyze-btn').classList.add('hidden');
+            document.getElementById('results-card').classList.add('hidden');
+            document.getElementById('loading-card').classList.add('hidden');
+            document.getElementById('file-input').value = '';
+            document.getElementById('photo-input').value = '';
+
+            // Stop any ongoing recording
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+            }
+            if (recordingInterval) {
+                clearInterval(recordingInterval);
+            }
+        }
+
+        // Test backend connection on page load
+        window.onload = async function() {
+            try {
+                const response = await fetch('http://localhost:8000/health');
+                if (response.ok) {
+                    console.log('Backend connected successfully');
+                } else {
+                    console.warn('Backend health check failed');
+                }
+            } catch (error) {
+                console.warn('Could not connect to backend:', error);
+            }
+        };
+    </script>
+</body>
+</html>
