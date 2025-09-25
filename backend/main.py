@@ -7,6 +7,7 @@ import os
 import uuid
 from model import load_model, predict_from_file
 import logging
+from fastapi.staticfiles import StaticFiles
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -20,14 +21,15 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Allow your frontend origin(s) here
+# Allow Railway and other deployment origins
 origins = [
     "http://localhost:3000",
-    "http://localhost:9002",  # Added for Next.js dev server
+    "http://localhost:9002",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:9002",
-    "https://sleepguard.vercel.app",
-    "*"  # Allow all origins for development - remove in production
+    "https://*.railway.app",
+    "https://*.up.railway.app",
+    "*"  # Allow all origins for Railway deployment
 ]
 
 app.add_middleware(
@@ -39,6 +41,15 @@ app.add_middleware(
 )
 
 model = None
+
+# Mount static files (for serving the frontend)
+app.mount("/static", StaticFiles(directory="../"), name="static")
+
+# Serve the main HTML file at root
+@app.get("/app")
+async def serve_frontend():
+    from fastapi.responses import FileResponse
+    return FileResponse("../index.html")
 
 @app.on_event("startup")
 def startup_event():
@@ -56,7 +67,7 @@ def startup_event():
 
 @app.get("/")
 async def root():
-    return {"message": "SleepGuard API is running", "status": "healthy"}
+    return {"message": "SleepDiagnosis API is running", "status": "healthy", "frontend": "/app"}
 
 @app.get("/health")
 async def health():
@@ -174,4 +185,5 @@ async def analyze(audio: UploadFile = File(...)):
             logger.warning(f"Failed to clean up {tmp_path}: {e}")
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)

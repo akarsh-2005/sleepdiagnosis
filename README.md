@@ -4,8 +4,8 @@
 
 > **Enhanced with Automatic MP3 Conversion for Superior Spectrogram Analysis**
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/akarsh-2005/sleepdiagnosis)
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://sleepdiagnosis.vercel.app)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/sleepdiagnosis)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://sleepdiagnosis.up.railway.app)
 [![Python](https://img.shields.io/badge/Python-3.9+-blue)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Latest-green)](https://fastapi.tiangolo.com)
 [![MP3 Enhanced](https://img.shields.io/badge/MP3-Enhanced-orange)](https://github.com/akarsh-2005/sleepdiagnosis)
