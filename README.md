@@ -1,14 +1,39 @@
-# SleepGuard - Sleep Apnea Detection System
+# SleepGuard AI 🛌✨
 
-An AI-powered sleep apnea detection system that analyzes snoring patterns to identify potential sleep apnea indicators.
+**AI-powered sleep analysis through environment optimization & snore detection**
 
-## Features
+SleepGuard AI is a comprehensive sleep analysis system that combines advanced audio processing, computer vision, and machine learning to provide personalized sleep health insights.
 
-- **Audio Recording**: Record snoring sounds directly in the browser
-- **File Upload**: Upload existing audio files (.wav, .mp3)
-- **AI Analysis**: Machine learning-powered sleep apnea detection
-- **Real-time Results**: Get instant analysis with confidence scores
-- **Modern UI**: Clean, responsive interface built with Next.js and Tailwind CSS
+## 🌟 Features
+
+### 🏠 **Sleep Space Analysis**
+- Upload bedroom photos for AI-powered environment analysis
+- Get personalized recommendations for optimal sleep conditions
+- Color-coded severity levels (high, moderate, low)
+- Professional sleep environment advice
+
+### 🎙️ **Auto Record Snoring**
+- Real-time snoring detection and automatic recording
+- Configurable sensitivity settings (10-90%)
+- Customizable recording duration (5 minutes to 2 hours)
+- Live audio level monitoring with visual feedback
+- Smart snoring event counting
+
+### 📁 **Upload Audio Analysis**
+- Support for .wav, .mp3, .m4a, and .flac files
+- Advanced spectrogram generation and visualization
+- Frequency band analysis (Low, Mid, High frequency ranges)
+- Dominant frequency detection
+- Sleep apnea probability scoring
+
+### 📊 **Advanced Analytics**
+- **Spectrogram Visualization**: Time-frequency analysis with matplotlib
+- **Frequency Band Breakdown**: 
+  - Low Frequency (0-100 Hz): Deep breathing, body movements
+  - Mid Frequency (100-500 Hz): Primary snoring range
+  - High Frequency (>500 Hz): Airway turbulence, apnea events
+- **Medical Interpretation**: AI-powered insights for sleep patterns
+- **Confidence Scoring**: Probability-based sleep apnea detection
 
 ## Architecture
 
