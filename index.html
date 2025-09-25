@@ -246,14 +246,14 @@
             </div>
             <div class="card-body">
                 <div class="tab-buttons">
-                    <button class="tab-button active" onclick="switchTab('space')">Sleep Space</button>
-                    <button class="tab-button" onclick="switchTab('record')">Auto Record</button>
-                    <button class="tab-button" onclick="switchTab('upload')">Upload Audio</button>
+                    <button class="tab-button active" onclick="switchTab('space')">🏠 Sleep Space</button>
+                    <button class="tab-button" onclick="switchTab('record')">🎙️ Auto Record</button>
+                    <button class="tab-button" onclick="switchTab('upload')">📁 Upload Audio</button>
                 </div>
 
                 <div id="space-tab" class="tab-content active">
                     <div class="upload-area required" id="photo-upload-area" onclick="document.getElementById('photo-input').click()">
-                        <div style="font-size: 48px; margin-bottom: 15px;">HOME</div>
+                        <div style="font-size: 48px; margin-bottom: 15px;">🏠</div>
                         <p style="margin: 10px 0;"><strong>Upload Your Bedroom Photo</strong> <span class="required-indicator">REQUIRED</span></p>
                         <p style="color: #718096; margin-bottom: 10px;">Get personalized sleep environment advice</p>
                         <input type="file" id="photo-input" accept="image/*" onchange="handlePhotoSelect(event)">
@@ -267,16 +267,16 @@
 
                 <div id="record-tab" class="tab-content">
                     <div class="upload-area required" id="record-upload-area">
-                        <div style="font-size: 48px; margin-bottom: 15px;">MIC</div>
+                        <div style="font-size: 48px; margin-bottom: 15px;">🎙️</div>
                         <p style="margin: 10px 0;"><strong>Auto Record Snoring</strong> <span class="required-indicator">RECORDING REQUIRED</span></p>
                         <p style="color: #718096; margin-bottom: 15px;">Automatically detect and record snoring sounds</p>
                         
                         <div id="recording-controls" style="margin: 20px 0;">
                             <button id="start-recording-btn" class="btn" onclick="startAutoRecording()" style="background: #48bb78; color: white; margin: 5px;">
-                                START Start Auto Recording
+                                🔴 Start Auto Recording
                             </button>
                             <button id="stop-recording-btn" class="btn" onclick="stopAutoRecording()" style="background: #e53e3e; color: white; margin: 5px; display: none;">
-                                STOP Stop Recording
+                                ⏹️ Stop Recording
                             </button>
                         </div>
                         
@@ -315,7 +315,7 @@
                         </div>
                         
                         <div id="recorded-audio-preview" style="display: none; margin: 20px 0; padding: 15px; background: #edf2f7; border-radius: 8px;">
-                            <h4 style="margin: 0 0 10px 0; color: #4a5568;">Recorded Audio</h4>
+                            <h4 style="margin: 0 0 10px 0; color: #4a5568;">🎧 Recorded Audio</h4>
                             <audio id="recorded-audio" controls style="width: 100%; margin: 10px 0;"></audio>
                             <p style="color: #4a5568; margin: 5px 0;">Duration: <span id="final-duration"></span></p>
                             <p style="color: #4a5568; margin: 5px 0;">Total snoring events: <span id="final-snoring-count"></span></p>
@@ -327,7 +327,7 @@
 
                 <div id="upload-tab" class="tab-content">
                     <div class="upload-area required" id="file-upload-area" onclick="document.getElementById('file-input').click()">
-                        <div style="font-size: 48px; margin-bottom: 15px;">FILE</div>
+                        <div style="font-size: 48px; margin-bottom: 15px;">📁</div>
                         <p style="margin: 10px 0;"><strong>Choose an audio file</strong> <span class="required-indicator">REQUIRED</span></p>
                         <p style="color: #718096;">For traditional snore analysis</p>
                         <input type="file" id="file-input" accept=".wav,.mp3" onchange="handleFileSelect(event)">
@@ -337,7 +337,7 @@
                 </div>
 
                 <button id="analyze-btn" class="btn btn-full hidden" onclick="analyzeContent()" style="margin-top: 20px;">
-                    <span id="analyze-text">Analyze Sleep Space</span>
+                    <span id="analyze-text">🔍 Analyze Sleep Space</span>
                 </button>
             </div>
         </div>
@@ -356,11 +356,11 @@
             <div class="card-body">
                 <div id="results-content"></div>
                 <div class="disclaimer">
-                    <div class="disclaimer-title">WARNING Medical Disclaimer</div>
+                    <div class="disclaimer-title">⚠️ Medical Disclaimer</div>
                     <p>This tool provides general advice and should not replace professional medical consultation. For persistent sleep issues or suspected sleep disorders, please consult a healthcare provider.</p>
                 </div>
                 <button class="btn btn-full" onclick="resetApp()" style="margin-top: 20px;">
-                    RESET Start Over
+                    🔄 Start Over
                 </button>
             </div>
         </div>
@@ -395,13 +395,13 @@
             const analyzeBtn = document.getElementById('analyze-btn');
             
             if (tab === 'space') {
-                analyzeText.textContent = 'Analyze Sleep Space';
+                analyzeText.textContent = '🔍 Analyze Sleep Space';
                 analyzeBtn.style.display = currentPhotoFile ? 'block' : 'none';
             } else if (tab === 'record') {
-                analyzeText.textContent = 'Analyze Recorded Audio';
+                analyzeText.textContent = '🔍 Analyze Recorded Audio';
                 analyzeBtn.style.display = currentRecordedAudio ? 'block' : 'none';
             } else {
-                analyzeText.textContent = 'Analyze Snore Audio';
+                analyzeText.textContent = '🔍 Analyze Snore Audio';
                 analyzeBtn.style.display = currentAudioFile ? 'block' : 'none';
             }
         }
@@ -615,28 +615,28 @@
                     title: "Lighting Environment",
                     issue: "Room appears to have bright lighting",
                     advice: "Consider using blackout curtains or an eye mask. Dim lighting 1-2 hours before bedtime helps your body produce melatonin naturally.",
-                    icon: "LIGHT",
+                    icon: "💡",
                     severity: "moderate"
                 },
                 {
                     title: "Pillow Support",
                     issue: "Pillows appear flat or unsupportive",
                     advice: "Invest in a contoured or memory foam pillow that keeps your neck aligned. Proper neck support can reduce airway obstruction during sleep.",
-                    icon: "SLEEP",
+                    icon: "😴",
                     severity: "high"
                 },
                 {
                     title: "Room Organization",
                     issue: "Bedroom appears cluttered",
                     advice: "A clean, organized bedroom promotes better sleep quality. Consider removing electronic devices and creating a calming environment.",
-                    icon: "CLEAN",
+                    icon: "🧹",
                     severity: "low"
                 },
                 {
                     title: "Optimal Sleep Environment",
                     issue: "Your bedroom looks well-organized",
                     advice: "Great job! Your sleep environment appears conducive to quality rest. Maintain this setup and ensure room temperature stays between 60-67°F.",
-                    icon: "CHECK",
+                    icon: "✅",
                     severity: "none"
                 }
             ];
@@ -690,14 +690,14 @@
             
             const resultsHtml = `
                 <div class="result-card">
-                    <div class="result-title">Sleep Environment Analysis</div>
+                    <div class="result-title">🏠 Sleep Environment Analysis</div>
                     <p style="margin: 15px 0; color: #4a5568;">
                         Based on your bedroom photo, here are personalized recommendations to optimize your sleep environment:
                     </p>
                     ${adviceHtml}
                     <div style="margin-top: 20px; padding: 15px; background: #edf2f7; border-radius: 8px;">
                         <p style="margin: 0; font-size: 14px; color: #4a5568;">
-                            <strong>NOTE:</strong> These suggestions are based on visual analysis of your bedroom setup. 
+                            <strong>📝 Note:</strong> These suggestions are based on visual analysis of your bedroom setup. 
                             For persistent sleep issues or suspected sleep apnea, please consult a healthcare professional.
                         </p>
                     </div>
@@ -790,7 +790,7 @@
                 if (result.spectrogram.image_base64) {
                     spectrogramHtml = `
                         <div style="margin: 20px 0; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-                            <h4 style="margin-bottom: 15px; color: #4a5568; font-size: 18px;">Frequency Analysis & Spectrogram</h4>
+                            <h4 style="margin-bottom: 15px; color: #4a5568; font-size: 18px;">📊 Frequency Analysis & Spectrogram</h4>
                             <div style="text-align: center; margin-bottom: 15px; background: #f7fafc; padding: 15px; border-radius: 8px;">
                                 <img src="data:image/png;base64,${result.spectrogram.image_base64}" 
                                      alt="Audio Spectrogram" 
@@ -868,7 +868,7 @@
             }
             
             let analysisHtml = '<div style="margin-top: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px;">';
-            analysisHtml += '<h5 style="margin: 0 0 10px 0; color: #495057;">MUSIC Frequency Band Analysis:</h5>';
+            analysisHtml += '<h5 style="margin: 0 0 10px 0; color: #495057;">🎵 Frequency Band Analysis:</h5>';
             
             const bands = [
                 { name: 'Low Frequency', range: '0-100 Hz', key: 'low_freq_energy', color: '#28a745', description: 'Deep breathing, body movements' },
@@ -924,7 +924,7 @@
                 analysisHtml += `
                     <div style="margin-top: 10px; padding: 10px; background: #e3f2fd; border-radius: 6px;">
                         <small style="color: #1976d2;">
-                            <strong>TARGET Dominant Frequency:</strong> ${Math.round(dominantFreq)} Hz
+                            <strong>🎯 Dominant Frequency:</strong> ${Math.round(dominantFreq)} Hz
                         </small>
                     </div>
                 `;
@@ -965,17 +965,17 @@
             let alertBg = '#d1ecf1';
             
             if (highPct > 0.4) {
-                interpretation = 'WARNING High frequency content detected - may indicate airway obstruction or irregular breathing patterns.';
+                interpretation = '⚠️ High frequency content detected - may indicate airway obstruction or irregular breathing patterns.';
                 alertClass = 'warning';
                 alertColor = '#856404';
                 alertBg = '#fff3cd';
             } else if (midPct > 0.5) {
-                interpretation = 'CHART Predominantly mid-frequency snoring - typical snoring patterns detected.';
+                interpretation = '📊 Predominantly mid-frequency snoring - typical snoring patterns detected.';
                 alertClass = 'success';
                 alertColor = '#155724';
                 alertBg = '#d4edda';
             } else if (lowPct > 0.5) {
-                interpretation = 'SLEEP Low frequency dominance - may indicate deep sleep breathing or body movement sounds.';
+                interpretation = '💤 Low frequency dominance - may indicate deep sleep breathing or body movement sounds.';
             }
             
             if (interpretation) {
